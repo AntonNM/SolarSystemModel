@@ -8,7 +8,8 @@
 	let planets = [];
 	let solarSystem;
 	let targetPlanet = "Sun";
-	let period = 3600*24;
+	let period = 3600*24; // day in seconds
+	let state = 1;
 	
 	onMount(async () => {
 		solarSystem = await import ("./solarSystem.js");
@@ -17,6 +18,7 @@
 		planets = solarSystem.getPlanets();
 		targetPlanet = solarSystem.getTarget()
 	});
+
 	function updatePeriod(){
 		if(!solarSystem) return;
 		speed = Math.round(solarSystem.getSpeed() / period);
@@ -28,6 +30,19 @@
 	function updateTarget(){
 		if(!solarSystem) return;
 		solarSystem.setTarget(targetPlanet);
+	}
+	function resetFirst(){
+		if(!solarSystem) return;
+		solarSystem.resetFirst();
+	}
+	function toggleCameraLock(){
+		if(!solarSystem) return;
+		solarSystem.toggleCameraLock();
+	}
+	function toggleState(){
+		if(!solarSystem) return;
+		solarSystem.toggleState();
+		state = !state;
 	}
 
 	let periods = [
@@ -43,10 +58,12 @@
   <body id="page">
 
 	<div id="header">
-		<h1>Solar System</h1>
+		<h1>Solar System </h1>
+		<h5>@{solarSystem?.simulationTime}</h5>
 		<div class="header-control-div">
 			
 			<div class="speed-div ctrl-div">
+				<button on:click={toggleState}> {state?"Pause":"Play"}</button>
 				<label for="speed">Speed:</label>
 				<input type="range" id="speed" name="speed" step="0.1" min="0" max="1000" bind:value={speed} on:input={updateSpeed}/>
 				<!-- <label for="speed">Periods/Second</label> -->
@@ -71,6 +88,7 @@
 						</option>
 					{/each}
 				</select>
+				<button on:click={toggleCameraLock}> lock</button>
 			</div>
 		</div>
 
