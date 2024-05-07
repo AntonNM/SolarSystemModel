@@ -14,7 +14,7 @@ export function setState(newState){
     simulationState = newState
 }
 export function toggleState(){
-    simulationState = 0
+    simulationState = !simulationState
 }
 
 let speed = 3600*24*3.65;
@@ -317,9 +317,9 @@ const lockedCameraDirection = new THREE.Vector3(0, 1, 0)
 function animate() {
     const simulationTimePassed = clock.getDelta()*1000 * speed;
     
-
+    
 	requestAnimationFrame( animate );
-
+    if(simulationState == state.playing) {
     const targetPlanet = planets.filter((e)=>e.id==controlTarget)[0];
     const targetPosition = targetPlanet.mesh.position;
     controls.target.copy(targetPosition);
@@ -332,8 +332,9 @@ function animate() {
     controls.update();
 	renderer.render( scene, camera );
 
-    if(simulationState == state.playing) {
+    
         simulationTime += simulationTimePassed;
+        // console.log(simulationTime)
         planets.forEach(planet => {
             // if(!planet.mesh) return
             planet.mesh.rotation.y += planet.rotationSpeed * simulationTimePassed;
