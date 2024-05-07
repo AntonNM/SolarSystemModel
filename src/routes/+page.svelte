@@ -5,48 +5,14 @@
 	import * as THREE from 'three';
 	import { OrbitControls } from 'three/addons/controls/OrbitControls.js';
 
-	
-
 	let canvasContainer;
 	let canvas;
-	let speedInput = 1//3.65;
-	// let planets = [];
-	let solarSystem;
-	let period = 1//3600*24; // day in seconds
-	// let state = 1;
+	let speedInput = 1
+	let period = 1
 	 
 	onMount(async () => {
-		// solarSystem = await import ("./solarSystem.svelte");
-		// solarSystem.createScene(canvas, canvasContainer)
-		
-		// speed = solarSystem.getSpeed() / period;
-		// planets = solarSystem.getPlanets();
-		// targetPlanet = solarSystem.getTarget()
 		createScene(canvas, canvasContainer)
 	});
-
-	// function updatePeriod(){
-	// 	if(!solarSystem) return;
-	// 	speed = Math.round(solarSystem.getSpeed() / period);
-	// }
-	function updateSpeed(){
-		if(!solarSystem) return;
-		solarSystem.setSpeed(speed*period);
-	}
-	// function resetFirst(){
-	// 	if(!solarSystem) return;
-	// 	solarSystem.resetFirst();
-	// }
-	// function toggleCameraLock(){
-	// 	if(!solarSystem) return;
-	// 	solarSystem.toggleCameraLock();
-	// }
-	// function toggleState(){
-	// 	console.log(solarSystem)
-	// 	if(!solarSystem) return;
-	// 	solarSystem.toggleState();
-	// 	state = !state;
-	// }
 
 	let periods = [
 		{key:"Years", value:3600*24*365},
@@ -57,8 +23,6 @@
 		{key:"Minutes", value:60},
 		{key:"Seconds", value:1},
 	]
-	// $:console.log(solarSystem);
-
 
 	export let simulationTime = (new Date()).getTime();
 	
@@ -127,8 +91,7 @@
 		renderer.setSize( width, height , false);
 	
 		camera = new THREE.PerspectiveCamera( 100, width / height, minDistance, maxDistance );
-		camera.position.set( 0, 20, 100 );
-		camera.lookAt( 0, 0, 0 );
+		cameraReset();
 	
 		controls = new OrbitControls( camera, renderer.domElement );
 		controls.update();
@@ -137,6 +100,11 @@
 	
 		animate();
 	  }
+
+	function cameraReset(){
+		camera.position.set( 0, 20, 100 );
+		camera.lookAt( 0, 0, 0 );
+	}
 	
 	// const G = 6.674* Math.pow(10, -11);
 	//https://ssd.jpl.nasa.gov/planets/approx_pos.html#tables
@@ -213,8 +181,6 @@
 	}
 	
 	function getSaturnRing (planet){
-		// console.log("getRing", planet.scaledRadius, Math.pow(planet.ringRadius, 1/root)*radiusScalingFactor)
-		// const geometry = new THREE.RingGeometry(planet.scaledRadius, planet.ringRadius*radiusScalingFactor, 64);
 		const outerRadius = Math.pow(planet.ringRadius, 1/root)*radiusScalingFactor;
 		const geometry = new THREE.RingGeometry(planet.scaledRadius, outerRadius);
 		var pos = geometry.attributes.position;
@@ -229,7 +195,6 @@
 			side: THREE.DoubleSide,
 		}); 
 		const ring = new THREE.Mesh( geometry, material ); 
-		// scene.add( circle );
 		return ring.applyQuaternion(globalOrientationQuaternion);
 	}
 
@@ -386,8 +351,6 @@
 	const minOrbit = 0.3074948213625648 * (0.9*getPlanetByID('Mercury').orbitDistance)
 	const maxOrbit = 30.338928225304635 * (1.1*getPlanetByID('Neptune').orbitDistance)
 	
-	// export let orbitScalingFactor = (1/maxOrbit)*2000  
-	
 	function scaleOrbit(planet, v){
 	
 		if(!(v.length() && planet.orbitDistance)) return v;
@@ -416,7 +379,6 @@
 		if(simulationState == state.playing) {
 
 			simulationTime += simulationTimePassed;
-			// console.log(simulationTime)
 			planets.forEach(planet => {
 				const rotation = planet.rotationSpeed * simulationTimePassed;
 				planet.mesh.rotation.y += rotation;
@@ -431,11 +393,8 @@
 					planet.mesh.rotation.y += rotation;
 				}
 			});
-			// const targetPosition = getPlanetByID(controlTarget).mesh.position;
+			
 			const targetPosition = getPlanetByID(controlTarget).mesh.position;
-			// controls.target.copy(targetPosition);
-
-			//prevent
 			let scaledTargetPosition = (new THREE.Vector3()).copy(targetPosition).multiplyScalar(-1);
 			planets.forEach(planet=>{
 				planet.mesh.position.add(scaledTargetPosition)
@@ -448,13 +407,10 @@
 				planet.line.position.copy(sunPosition);
 			})
 
-			if(controlTarget != _previousTarget ){ //|| (cameraLock && simulationState)
-				// camera.position.copy(center)
+			if(controlTarget != _previousTarget ){
 				_previousTarget = controlTarget;
-				console.log('move to center')
+				cameraReset();
 			}
-			// camera.position.copy(center)
-			first = false
 		}
 	}
 	</script>
@@ -462,18 +418,13 @@
   <body id="page">
 
 	<div id="header">
-		<!-- <h1>Solar System </h1> -->
 		<div class="header-control-div" style="border-width:thin;">
 			<h5 style="min-width:200px;">{format(simulationTime, 'yyyy-MM-dd HH-mm-ss')}</h5>
 			<div class="speed-div ctrl-div">
 				<button on:click={toggleState} style="min-width:72px;"> {simulationState?"Pause":"Play"}</button>
 				<label for="speed">Speed:</label>
 				<input type="range" id="speed" name="speed" step="0.1" min="0" max="1000" bind:value={speedInput}/>
-				<!-- <label for="speed">Periods/Second</label> -->
 				<input type="number" bind:value={speedInput}>
-				<!-- <h3>
-					{speedInput}
-				</h3> -->
 				<select id="period" name = "period" class="select-ctrl" bind:value={period} >
 					{#each periods as period}
 						<option value={period.value}>
@@ -492,8 +443,6 @@
 						</option>
 					{/each}
 				</select>
-				<!-- <input type="checkbox" name="lock" on:click={toggleCameraLock}/>
-				<label for="lock">Lock</label> -->
 			</div>
 		</div>
 
