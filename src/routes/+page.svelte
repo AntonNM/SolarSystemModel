@@ -449,6 +449,12 @@
 			}
 		}
 	}
+
+	function validateSpeedInput(){
+		if(speedInput > 1000) speedInput = 1000;
+		if(speedInput < 0) speedInput = 0;
+	}
+
 	</script>
 
   <body id="page">
@@ -456,25 +462,31 @@
 	<div id="header">
 		<div class="header-control-div" style="border-width:thin;">
 			<div class="time-div ctrl-div">
-				<h5 style="min-width:200px;">{format(simulationTime, 'yyyy-MM-dd HH-mm-ss')}</h5>\
-				<button on:click={toggleState} style="min-width:72px;"> {simulationState==state.playing?"Pause":"Play"}</button>
-				<button on:click={stopRestart} style={"min-width:72px;"}> {simulationState!=state.stopped?"Stop":"Restart"}</button>
+				<div>
+					<button on:click={toggleState} style="min-width:30px"><i class={simulationState==state.playing?"fa fa-solid fa-pause":"fa fa-solid fa-play"}></i></button>
+					<button on:click={stopRestart} style="min-width:30px"><i class={simulationState!=state.stopped?"fa fa-solid fa-stop":"fa fa-solid fa-refresh"}></i></button>
+				</div>
+				<h5 style="min-width:200px;">{format(simulationTime, 'yyyy-MM-dd HH-mm-ss')}</h5>
 			</div>
 			<div class="speed-div ctrl-div">
-				<label for="speed">Speed:</label>
-				<input type="range" id="speed" name="speed" step="0.1" min="0" max="1000" bind:value={speedInput}/>
-				<input type="number" bind:value={speedInput}>
-				<select id="period" name = "period" class="select-ctrl" bind:value={period} >
-					{#each periods as period}
-						<option value={period.value}>
-							{period.key}
-						</option>
-					{/each}
-				</select>
-				<label for="period">/Second</label>
+				<div>
+					<label for="speed">Speed:</label>
+					<input type="range" id="speed" name="speed" step="0.1" min="0" max="1000" bind:value={speedInput}/>
+				</div>
+				<div>
+					<input type="number" step="0.1" min="0" max="1000" bind:value={speedInput} on:input={validateSpeedInput} style="max-height:20px;">
+					<select id="period" name = "period" class="select-ctrl" bind:value={period} >
+						{#each periods as period}
+							<option value={period.value}>
+								{period.key}
+							</option>
+						{/each}
+					</select>
+					<label for="period">/Second</label>
+				</div>
 			</div>
 			<div class="target-div ctrl-div">
-				<label for="target">Target</label>
+				<label for="target">Target:</label>
 				<select id="target" name="target" class="select-ctrl" bind:value={controlTarget}>
 					{#each Object.values(planets) as planet}
 						<option value={planet.id}>
@@ -544,6 +556,10 @@
 		flex-direction: row;
 		align-items: center;
 		gap: 8px;
+	}
+
+	.time-div{
+		flex-wrap:wrap-reverse !important;
 	}
 
 	#period{
