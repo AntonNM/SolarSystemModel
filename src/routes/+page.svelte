@@ -114,7 +114,7 @@
 		renderer.setSize( width, height , false);
 	
 		camera = new THREE.PerspectiveCamera( 100, width / height, minDistance, maxDistance );
-		cameraReset();
+		cameraReset("Sun");
 	
 		controls = new OrbitControls( camera, renderer.domElement );
 		controls.update();
@@ -136,8 +136,8 @@
 	// 	renderer.setSize(window.innerWidth, window.innerHeight);
 	// },false);
 
-	function cameraReset(){
-		camera.position.set( 0, 20, 100 );
+	function cameraReset(target="Sun"){
+		camera.position.set( 0, 20, (getPlanetByID(target)?.scaledRadius ?? 50) * 6 );
 		camera.lookAt( 0, 0, 0 );
 	}
 	
@@ -445,7 +445,7 @@
 
 			if(controlTarget != _previousTarget ){
 				_previousTarget = controlTarget;
-				cameraReset();
+				cameraReset(controlTarget);
 			}
 		}
 	}
@@ -474,7 +474,7 @@
 					<input type="range" id="speed" name="speed" step="0.1" min="0" max="1000" bind:value={speedInput}/>
 				</div>
 				<div>
-					<input type="number" step="0.1" min="0" max="1000" bind:value={speedInput} on:input={validateSpeedInput} style="max-height:20px;">
+					<input type="number" step="0.1" min="0" max="1000" bind:value={speedInput} on:input={validateSpeedInput} style="max-height:14.8px;">
 					<select id="period" name = "period" class="select-ctrl" bind:value={period} >
 						{#each periods as period}
 							<option value={period.value}>
