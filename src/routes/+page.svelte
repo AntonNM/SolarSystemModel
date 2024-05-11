@@ -455,10 +455,12 @@
 
 	<div id="header">
 		<div class="header-control-div" style="border-width:thin;">
-			<h5 style="min-width:200px;">{format(simulationTime, 'yyyy-MM-dd HH-mm-ss')}</h5>
-			<div class="speed-div ctrl-div">
+			<div class="time-div ctrl-div">
+				<h5 style="min-width:200px;">{format(simulationTime, 'yyyy-MM-dd HH-mm-ss')}</h5>\
 				<button on:click={toggleState} style="min-width:72px;"> {simulationState==state.playing?"Pause":"Play"}</button>
 				<button on:click={stopRestart} style={"min-width:72px;"}> {simulationState!=state.stopped?"Stop":"Restart"}</button>
+			</div>
+			<div class="speed-div ctrl-div">
 				<label for="speed">Speed:</label>
 				<input type="range" id="speed" name="speed" step="0.1" min="0" max="1000" bind:value={speedInput}/>
 				<input type="number" bind:value={speedInput}>
@@ -538,6 +540,7 @@
 
 	.ctrl-div{
 		display:flex;
+		flex-wrap: wrap;
 		flex-direction: row;
 		align-items: center;
 		gap: 8px;
@@ -550,6 +553,7 @@
 	.header-control-div{
 
 		display: flex;
+		flex-wrap: wrap;
 		justify-content: space-between;
 		width: 100%;
 		margin: 0 16px;
