@@ -21,7 +21,7 @@
         camera.aspect = width/height;
 		// console.log("DPR vs W/H",devicePixelRatio, width/height)
         camera.updateProjectionMatrix();
-		// renderer.setPixelRatio(width/height);
+		//renderer.setPixelRatio(devicePixelRatio);
         renderer.setSize(width,height);
     }
 	});
@@ -548,8 +548,6 @@
 			top:10px;
 		}
 	}
-
-
 
 	#header>h1{
 		margin:0;
