@@ -458,12 +458,13 @@
 		if(speedInput < 0) speedInput = 0;
 	}
 
+	let isHidden = false;
 	</script>
 
   <body id="page">
 
-	<div id="header">
-		<div class="header-control-div" style="border-width:thin;">
+	<div id="header" class:isHidden>
+		<div class="header-control-div" style="border-width:thin;" >
 			<div class="time-div ctrl-div">
 				<div class="ctrl-div">
 					<button on:click={toggleState} style="min-width:30px"><i class={simulationState==state.playing?"fa fa-solid fa-pause":"fa fa-solid fa-play"}></i></button>
@@ -499,7 +500,13 @@
 				</select>
 			</div>
 		</div>
-
+		<div class="hide-ctrl" class:isHidden>
+			<h6><a on:click={()=>{isHidden = !isHidden}}>hide controls</a></h6>
+		</div>
+	</div>
+	
+	<div class="show-ctrl" class:isHidden = {!isHidden}>
+		<h6><a on:click={()=>{isHidden = !isHidden}}>show controls</a></h6>
 	</div>
 	<div id="scene" bind:this={canvasContainer}>
 		<canvas bind:this={canvas} ></canvas>
@@ -508,6 +515,17 @@
 
 
 <style lang="scss">
+
+	h6{
+		margin:0;
+	}
+
+	.isHidden{
+		display:none !important;
+	}
+	body{
+		font-family: 'Orbitron', sans-serif;
+	}
 
 	.select-ctrl{
 		font-family: 'Orbitron', sans-serif;
@@ -531,7 +549,12 @@
 		border:solid;
 		padding:8px;
 		margin:8px;
-		display:flex;
+		display:grid;
+		grid-template-rows: auto auto;
+
+	}
+	#header.isHidden{
+		display:none;
 	}
 
 	@media only screen and (max-width: 600px) {
@@ -540,12 +563,36 @@
 			right:0;
 			bottom: 0;
 		}
+		.hide-ctrl{
+			display: flex;
+			justify-content: right;
+		}
+		.show-ctrl{
+			z-index: 1;
+			position: fixed;
+			right:12px;
+			bottom:12px;
+			display: flex;
+			justify-content: right;
+		}
 	}
 	@media only screen and (min-width: 600px) {
 		#header{
 			left:0;
 			right:0;
 			top:10px;
+		}
+		.hide-ctrl{
+			display: flex;
+			justify-content: right;
+		}
+		.show-ctrl{
+			z-index: 1;
+			position: fixed;
+			right:12px;
+			top:12px;
+			display: flex;
+			justify-content: right;
 		}
 	}
 
@@ -589,7 +636,5 @@
 		flex-wrap: wrap;
 		justify-content: space-between;
 		width: 100%;
-		margin: 0 16px;
 	}
-
 </style>
