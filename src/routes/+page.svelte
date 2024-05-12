@@ -105,7 +105,14 @@
 	
 	export const createScene = (canvas, canvasContainer) => {
 		scene = new THREE.Scene();
-		scene.background = new THREE.TextureLoader().load('8k_stars_milky_way.jpg');
+
+		const geometry = new THREE.SphereGeometry(maxDistance);
+		const material = new THREE.MeshBasicMaterial( {
+			map: new THREE.TextureLoader().load('8k_stars_milky_way.jpg'),
+			side: THREE.DoubleSide,
+
+		} );
+		scene.add(new THREE.Mesh( geometry, material ));
 	
 		const style = getComputedStyle(canvasContainer)
 		const [width, height] = [parseInt(style.width), parseInt(style.height)]
@@ -116,7 +123,7 @@
 		renderer.setPixelRatio(devicePixelRatio);
 		renderer.setSize( width, height , false);
 	
-		camera = new THREE.PerspectiveCamera( 100, width / height, minDistance, maxDistance );
+		camera = new THREE.PerspectiveCamera( 100, width / height, minDistance, 2*maxDistance );
 		cameraReset("Sun");
 	
 		controls = new OrbitControls( camera, renderer.domElement );
@@ -193,11 +200,20 @@
 		return planets[ID]
 	}
 	
+	function loadImages(){
+		planetList.forEach((planet)=>{
+			planet.image = new THREE.TextureLoader().load(planet.imagePath)
+			if(planet.id == "Saturn")
+				planet.ringImage = new THREE.TextureLoader().load(planet.ringImagePath)
+		})
+	}
+
 	//used to rotate objects to match starting orientation of images and camera, (mostly 2D shapes being maped to 3D)
 	var globalOrientationQuaternion = new THREE.Quaternion();
 	globalOrientationQuaternion.setFromAxisAngle(new THREE.Vector3(1, 0, 0), -Math.PI/2); // Axis of rotation is x axis
 	
 	function buildPlanets(){
+		loadImages()
 		planetList.forEach(planet => {
 	
 			planet.mesh = getPlanetMesh(planet);
@@ -226,7 +242,7 @@
 			geometry.attributes.uv.setXY(i, v3.length() < ((outerRadius+planet.scaledRadius)/2) ? 0 : 1, 1);
 		}
 		const material = new THREE.MeshBasicMaterial( {
-			map: new THREE.TextureLoader().load(planet.ringImagePath),
+			map: planet.ringImage,
 			transparent:true,
 			side: THREE.DoubleSide,
 		}); 
@@ -245,7 +261,7 @@
 		planet.scaledRadius = radius;
 		const geometry = new THREE.SphereGeometry(radius);
 		const material = new THREE.MeshBasicMaterial( {
-			map: new THREE.TextureLoader().load(planet.imagePath)
+			map: planet.image
 		} );
 	
 		return new THREE.Mesh( geometry, material );
@@ -413,6 +429,7 @@
 		
 		if(simulationState!= state.stopped)requestAnimationFrame( animate );
 		controls.update();
+		if(camera.position.length() > maxDistance) camera.position.multiplyScalar((maxDistance*0.9) / camera.position.length())
 		renderer.render( scene, camera );
 
 		if(simulationState == state.playing) {
