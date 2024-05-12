@@ -19,7 +19,9 @@
 		const style = getComputedStyle(canvasContainer)
 		const [width, height] = [parseInt(style.width), parseInt(style.height)]
         camera.aspect = width/height;
-         camera.updateProjectionMatrix();
+		// console.log("DPR vs W/H",devicePixelRatio, width/height)
+        camera.updateProjectionMatrix();
+		// renderer.setPixelRatio(width/height);
         renderer.setSize(width,height);
     }
 	});
@@ -110,6 +112,7 @@
 		console.log("dimensions", width, height)
 		
 		renderer = new THREE.WebGLRenderer({ antialias: true, canvas: canvas });
+		// console.log("DPR vs W/H",devicePixelRatio, width/height)
 		renderer.setPixelRatio(devicePixelRatio);
 		renderer.setSize( width, height , false);
 	
@@ -462,18 +465,18 @@
 	<div id="header">
 		<div class="header-control-div" style="border-width:thin;">
 			<div class="time-div ctrl-div">
-				<div>
+				<div class="ctrl-div">
 					<button on:click={toggleState} style="min-width:30px"><i class={simulationState==state.playing?"fa fa-solid fa-pause":"fa fa-solid fa-play"}></i></button>
 					<button on:click={stopRestart} style="min-width:30px"><i class={simulationState!=state.stopped?"fa fa-solid fa-stop":"fa fa-solid fa-refresh"}></i></button>
 				</div>
-				<h5 style="min-width:200px;">{format(simulationTime, 'yyyy-MM-dd HH-mm-ss')}</h5>
+				<h5 style="min-width:200px;margin:0px;">{format(simulationTime, 'yyyy-MM-dd HH-mm-ss')}</h5>
 			</div>
 			<div class="speed-div ctrl-div">
-				<div>
+				<div class="ctrl-div">
 					<label for="speed">Speed:</label>
 					<input type="range" id="speed" name="speed" step="0.1" min="0" max="1000" bind:value={speedInput}/>
 				</div>
-				<div>
+				<div class="ctrl-div">
 					<input type="number" step="0.1" min="0" max="1000" bind:value={speedInput} on:input={validateSpeedInput} style="max-height:14.8px;">
 					<select id="period" name = "period" class="select-ctrl" bind:value={period} >
 						{#each periods as period}
@@ -523,9 +526,6 @@
 		font-family: 'Orbitron', sans-serif;
 		z-index:1;
 		position:fixed;
-		left:0;
-		right:0;
-		top:10px;
 		border-color: white;
 		border-width:thin;
 		border:solid;
@@ -533,6 +533,24 @@
 		margin:8px;
 		display:flex;
 	}
+
+	@media only screen and (max-width: 600px) {
+		#header{
+			left:0;
+			right:0;
+			bottom: 0;
+		}
+	}
+	@media only screen and (min-width: 600px) {
+		#header{
+			left:0;
+			right:0;
+			top:10px;
+		}
+	}
+
+
+
 	#header>h1{
 		margin:0;
 	}
@@ -556,6 +574,7 @@
 		flex-direction: row;
 		align-items: center;
 		gap: 8px;
+		margin: 8px;
 	}
 
 	.time-div{
