@@ -428,8 +428,9 @@
 		
 		
 		if(simulationState!= state.stopped)requestAnimationFrame( animate );
+		controls.target.set(0,0,0);
 		controls.update();
-		if(camera.position.length() > maxDistance) camera.position.multiplyScalar((maxDistance*0.9) / camera.position.length())
+		if(camera.position.length() > maxDistance) camera.position.multiplyScalar((maxDistance*0.8) / camera.position.length())
 		renderer.render( scene, camera );
 
 		if(simulationState == state.playing) {
