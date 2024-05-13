@@ -4,6 +4,8 @@
 	import {format} from 'date-fns';
 	import * as THREE from 'three';
 	import { OrbitControls } from 'three/addons/controls/OrbitControls.js';
+	import { CSS2DRenderer, CSS2DObject } from 'three/addons/renderers/CSS2DRenderer.js';
+
 
 	let canvasContainer;
 	let canvas;
@@ -95,7 +97,8 @@
 	
 	let scene;
 	let renderer;
-	let camera
+	let labelRenderer;
+	let camera;
 	let controls;
 	
 	const minDistance = 0.1;
@@ -128,6 +131,12 @@
 	
 		controls = new OrbitControls( camera, renderer.domElement );
 		controls.update();
+
+		labelRenderer = new CSS2DRenderer();
+		labelRenderer.setSize( width, height );
+		// labelRenderer.domElement.style.position = 'absolute';
+		// labelRenderer.domElement.style.bottom = '0px';
+		document.body.appendChild( labelRenderer.domElement );
 		
 		buildPlanets();
 	
@@ -280,9 +289,23 @@
 	
 	function getPlanetOrbitPath(planet){
 		const points = getSpacedPoints(planet)
-		return new THREE.Line(new THREE.BufferGeometry().setFromPoints(points), new THREE.LineBasicMaterial({
+		const mesh =  new THREE.Line(new THREE.BufferGeometry().setFromPoints(points), new THREE.LineBasicMaterial({
 			color: planet?.color ?? 'yellow'
 		}));
+
+		const div = document.createElement( 'div' );
+		div.className = 'label';
+		div.textContent = planet.id;
+		div.style.backgroundColor = 'transparent';
+
+		const label = new CSS2DObject( div );
+		console.log(points[0])
+		label.position.set( 0, 0, 0 );
+		label.center.set( 0, 1 );
+		mesh.add( label );
+		label.layers.set( 1 );
+
+		return mesh;
 	}
 	
 	function getSpacedPoints(planet, n=360){
@@ -432,6 +455,7 @@
 		controls.update();
 		if(camera.position.length() > maxDistance) camera.position.multiplyScalar((maxDistance*0.8) / camera.position.length())
 		renderer.render( scene, camera );
+		labelRenderer.render( scene, camera );
 
 		if(simulationState == state.playing) {
 
