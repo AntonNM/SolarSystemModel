@@ -15,16 +15,32 @@
 		window.addEventListener("resize", onWindowResize);
     
 
-    function onWindowResize() {
-		const style = getComputedStyle(canvasContainer)
-		const [width, height] = [parseInt(style.width), parseInt(style.height)]
-        camera.aspect = width/height;
-		// console.log("DPR vs W/H",devicePixelRatio, width/height)
-        camera.updateProjectionMatrix();
-		//renderer.setPixelRatio(devicePixelRatio);
-        renderer.setSize(width,height);
-    }
+    // function onWindowResize() {
+		
+	// 	// const style = getComputedStyle(canvas)
+	// 	// //const style = getComputedStyle(canvasContainer)
+	// 	// console.log('resize', style)
+	// 	// const [width, height] = [parseInt(style.width), parseInt(style.height)]
+    //     camera.aspect = width/height;
+	// 	// console.log("DPR vs W/H",devicePixelRatio, width/height)
+    //     camera.updateProjectionMatrix();
+	// 	//renderer.setPixelRatio(devicePixelRatio);
+    //     renderer.setSize(width,height);
+    // }
+
+
+	function onWindowResize() {
+
+		camera.aspect = window.innerWidth / window.innerHeight;
+		camera.updateProjectionMatrix();
+
+		renderer.setSize( window.innerWidth, window.innerHeight );
+
+		}
+
 	});
+
+
 
 	let periods = [
 		{key:"Years", value:3600*24*365},
