@@ -13,20 +13,6 @@
 	onMount(async () => {
 		createScene(canvas, canvasContainer)
 		window.addEventListener("resize", onWindowResize);
-    
-
-    // function onWindowResize() {
-		
-	// 	// const style = getComputedStyle(canvas)
-	// 	// //const style = getComputedStyle(canvasContainer)
-	// 	// console.log('resize', style)
-	// 	// const [width, height] = [parseInt(style.width), parseInt(style.height)]
-    //     camera.aspect = width/height;
-	// 	// console.log("DPR vs W/H",devicePixelRatio, width/height)
-    //     camera.updateProjectionMatrix();
-	// 	//renderer.setPixelRatio(devicePixelRatio);
-    //     renderer.setSize(width,height);
-    // }
 
 
 	function onWindowResize() {
@@ -130,9 +116,9 @@
 		} );
 		scene.add(new THREE.Mesh( geometry, material ));
 	
-		const style = getComputedStyle(canvasContainer)
-		const [width, height] = [parseInt(style.width), parseInt(style.height)]
-		console.log("dimensions", width, height)
+		//const style = getComputedStyle(canvasContainer)
+		const [width, height] = [window.innerWidth,  window.innerHeight]
+		//console.log("dimensions", width, height)
 		
 		renderer = new THREE.WebGLRenderer({ antialias: true, canvas: canvas });
 		// console.log("DPR vs W/H",devicePixelRatio, width/height)
