@@ -14,19 +14,14 @@
 		createScene(canvas, canvasContainer)
 		window.addEventListener("resize", onWindowResize);
 
-
 	function onWindowResize() {
 
 		camera.aspect = window.innerWidth / window.innerHeight;
 		camera.updateProjectionMatrix();
-
 		renderer.setSize( window.innerWidth, window.innerHeight );
-
 		}
 
 	});
-
-
 
 	let periods = [
 		{key:"Years", value:3600*24*365},
@@ -51,6 +46,7 @@
 	export function setState(newState){
 		simulationState = newState
 	}
+
 	export function toggleState(){
 		if(simulationState == 2){
 			simulationState = state.paused;
@@ -69,6 +65,7 @@
 		}
 
 	}
+
 	export function restart(){
 		simulationTime = (new Date()).getTime()
 		speedInput = 1;
@@ -81,6 +78,7 @@
 	export function setSpeed(newSpeed){
 		speed = newSpeed;
 	}
+
 	export function getSpeed(){
 		return speed;
 	}
@@ -103,8 +101,6 @@
 	const minDistance = 0.1;
 	const maxDistance = 4000;
 
-
-	
 	export const createScene = (canvas, canvasContainer) => {
 		scene = new THREE.Scene();
 
@@ -116,12 +112,8 @@
 		} );
 		scene.add(new THREE.Mesh( geometry, material ));
 	
-		//const style = getComputedStyle(canvasContainer)
-		const [width, height] = [window.innerWidth,  window.innerHeight]
-		//console.log("dimensions", width, height)
-		
+		const [width, height] = [window.innerWidth,  window.innerHeight]		
 		renderer = new THREE.WebGLRenderer({ antialias: true, canvas: canvas });
-		// console.log("DPR vs W/H",devicePixelRatio, width/height)
 		renderer.setPixelRatio(devicePixelRatio);
 		renderer.setSize( width, height , false);
 	
@@ -129,24 +121,13 @@
 		cameraReset("Sun");
 	
 		controls = new OrbitControls( camera, renderer.domElement );
+		controls.maxDistance = maxDistance*0.9;
 		controls.update();
 		
 		buildPlanets();
 	
 		animate();
 	  }
-
-
-
-	// addEventListener("resize",() => {
-	// 	if(!canvasContainer) return;
-	// 	const style = getComputedStyle(canvasContainer)
-	// 	const [width, height] = [parseInt(style.width), parseInt(style.height)]
-	// 	camera.aspect = getWidth() / getHeight();
-	// 	camera.updateProjectionMatrix();
-
-	// 	renderer.setSize(window.innerWidth, window.innerHeight);
-	// },false);
 
 	function cameraReset(target="Sun"){
 		camera.position.set( 0, 20, (getPlanetByID(target)?.scaledRadius ?? 50) * 6 );
@@ -197,6 +178,7 @@
 		"Uranus":{id:"Uranus",   imagePath:'2k_uranus.jpg',              b:0.00058331,  c:-0.97731848, s:0.17689245,  f:7.67025000, a0:19.18797948, a:-0.00020455, e0:0.04685740, e:-0.00001550, i0:0.77298127, i:-0.00180155, l0:314.20276625, l:428.49512595,   w0:172.43404441, w:0.09266985, o0:73.96250215,  o:0.05739699,  orbitalEccentricity:0.047, mass:86.8,  orbitalPlaneAngle:0.77, rotationalAxisAngle:98,     color:'lightblue',  radius:25362,   dayInHours:17.2,      orbitDistance:1783.7,   orbitTime:30589*24*3600},
 		"Neptune":{id:"Neptune",  imagePath:'2k_neptune.jpg',             b:-0.00041348, c:0.68346318,  s:-0.10162547, f:7.67025000, a0:30.06952752, a:0.00006447,  e0:0.00895439, e:0.00000818,  i0:1.77005520, i:0.00022400,  l0:304.22289287, l:218.46515314,   w0:46.68158724,  w:0.01009938, o0:131.78635853, o:-0.00606302,  orbitalEccentricity:0.010, mass:102,   orbitalPlaneAngle:1.77, rotationalAxisAngle:30,     color:'darkblue',   radius:24622,   dayInHours:16.1,      orbitDistance:2795.2,   orbitTime:59800*24*3600},
 	}
+
 	let planetList = Object.values(planets);
 	function getPlanetByID(ID){
 		return planets[ID]
@@ -213,7 +195,6 @@
 	//used to rotate objects to match starting orientation of images and camera, (mostly 2D shapes being maped to 3D)
 	var globalOrientationQuaternion = new THREE.Quaternion();
 	globalOrientationQuaternion.setFromAxisAngle(new THREE.Vector3(1, 0, 0), -Math.PI/2); // Axis of rotation is x axis
-	
 	function buildPlanets(){
 		loadImages()
 		planetList.forEach(planet => {
@@ -402,7 +383,6 @@
 		return (new THREE.Vector3(x,y,z)).applyQuaternion(globalOrientationQuaternion);
 	}
 	
-	
 	//////////////
 	
 	const minOrbit = 0.3074948213625648 * (0.9*getPlanetByID('Mercury').orbitDistance)
@@ -432,7 +412,7 @@
 		if(simulationState!= state.stopped)requestAnimationFrame( animate );
 		controls.target.set(0,0,0);
 		controls.update();
-		if(camera.position.length() > maxDistance) camera.position.multiplyScalar((maxDistance*0.8) / camera.position.length())
+		//if(camera.position.length() > maxDistance*0.9) camera.position.multiplyScalar((maxDistance*0.9) / camera.position.length())
 		renderer.render( scene, camera );
 
 		if(simulationState == state.playing) {
@@ -543,6 +523,7 @@
 	.isHidden{
 		display:none !important;
 	}
+
 	body{
 		font-family: 'Orbitron', sans-serif;
 	}
@@ -550,6 +531,7 @@
 	.select-ctrl{
 		font-family: 'Orbitron', sans-serif;
 	}
+
 	.select-ctrl>option{
 		font-family: 'Orbitron', sans-serif;
 	}
@@ -573,6 +555,7 @@
 		grid-template-rows: auto auto;
 
 	}
+
 	#header.isHidden{
 		display:none;
 	}
@@ -583,10 +566,12 @@
 			right:0;
 			bottom: 0;
 		}
+
 		.hide-ctrl{
 			display: flex;
 			justify-content: right;
 		}
+
 		.show-ctrl{
 			z-index: 1;
 			position: fixed;
@@ -595,17 +580,21 @@
 			display: flex;
 			justify-content: right;
 		}
+
 	}
+
 	@media only screen and (min-width: 600px) {
 		#header{
 			left:0;
 			right:0;
 			top:10px;
 		}
+
 		.hide-ctrl{
 			display: flex;
 			justify-content: right;
 		}
+
 		.show-ctrl{
 			z-index: 1;
 			position: fixed;
@@ -628,6 +617,7 @@
 		max-height:calc(100% - 8px);
 
 	}
+
 	#scene>canvas{
 		width:100%;
 		max-height: 100%;
@@ -657,4 +647,5 @@
 		justify-content: space-between;
 		width: 100%;
 	}
+
 </style>
