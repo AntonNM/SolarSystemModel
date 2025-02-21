@@ -97,6 +97,8 @@
 	const minDistance = 0.1;
 	const maxDistance = 4000;
 
+	let loading = true;
+
 	export const createScene = async (canvas, canvasContainer) => {
 		scene = new THREE.Scene();
 
@@ -107,6 +109,7 @@
 			map: await backgroundTexture,
 			side: THREE.DoubleSide
 		});
+
 		scene.add(new THREE.Mesh(geometry, material));
 
 		const [width, height] = [window.innerWidth, window.innerHeight];
@@ -122,7 +125,7 @@
 		controls.update();
 
 		await buildPlanets();
-
+		loading=false;
 		animate();
 	};
 
@@ -821,15 +824,23 @@
 			>
 		</h6>
 	</div>
-	<div id="scene" bind:this={canvasContainer}>
-		<canvas bind:this={canvas}></canvas>
+	<div id="scene" bind:this={canvasContainer} >
+		<canvas bind:this={canvas} style={"display:"+loading?"none":"block"}></canvas>
+		<div class="loading" style={"display:"+!loading?"none":"block"}><p >Loading...</p></div>
 	</div>
+
+
+
 </body>
 
 <svelte:window on:keydown={onKeyDown} />
 <!-- <svelte:document bind:activeElement={activeElement} /> -->
 
 <style lang="scss">
+
+	.loading {
+		text-align: center;
+	}
 	h6 {
 		margin: 0;
 	}
