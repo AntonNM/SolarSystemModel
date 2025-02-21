@@ -101,12 +101,14 @@
 	const minDistance = 0.1;
 	const maxDistance = 4000;
 
-	export const createScene = (canvas, canvasContainer) => {
+	export const createScene = async (canvas, canvasContainer) => {
 		scene = new THREE.Scene();
 
+		let backgroundTexture = new THREE.TextureLoader().loadAsync('8k_stars_milky_way.jpg');
+		loadImages();
 		const geometry = new THREE.SphereGeometry(maxDistance);
 		const material = new THREE.MeshBasicMaterial( {
-			map: new THREE.TextureLoader().load('8k_stars_milky_way.jpg'),
+			map: await backgroundTexture,
 			side: THREE.DoubleSide,
 
 		} );
@@ -124,7 +126,7 @@
 		controls.maxDistance = maxDistance*0.9;
 		controls.update();
 		
-		buildPlanets();
+		await buildPlanets();
 	
 		animate();
 	  }
@@ -186,20 +188,20 @@
 	
 	function loadImages(){
 		planetList.forEach((planet)=>{
-			planet.image = new THREE.TextureLoader().load(planet.imagePath)
+			planet.image = new THREE.TextureLoader().loadAsync(planet.imagePath)
 			if(planet.id == "Saturn")
-				planet.ringImage = new THREE.TextureLoader().load(planet.ringImagePath)
+				planet.ringImage = new THREE.TextureLoader().loadAsync(planet.ringImagePath)
 		})
 	}
 
 	//used to rotate objects to match starting orientation of images and camera, (mostly 2D shapes being maped to 3D)
 	var globalOrientationQuaternion = new THREE.Quaternion();
 	globalOrientationQuaternion.setFromAxisAngle(new THREE.Vector3(1, 0, 0), -Math.PI/2); // Axis of rotation is x axis
-	function buildPlanets(){
-		loadImages()
-		planetList.forEach(planet => {
+	async function buildPlanets(){
+		
+		planetList.forEach(async planet =>  {
 	
-			planet.mesh = getPlanetMesh(planet);
+			planet.mesh = await getPlanetMesh(planet);
 			planet.rotationSpeed = getPlanetRotationSpeed(planet);
 			planet.line = getPlanetOrbitPath(planet)
 
@@ -215,7 +217,7 @@
 		});   
 	}
 	
-	function getSaturnRing (planet){
+	async function getSaturnRing (planet){
 		const outerRadius = Math.pow(planet.ringRadius, 1/root)*radiusScalingFactor;
 		const geometry = new THREE.RingGeometry(planet.scaledRadius, outerRadius);
 		var pos = geometry.attributes.position;
@@ -225,7 +227,7 @@
 			geometry.attributes.uv.setXY(i, v3.length() < ((outerRadius+planet.scaledRadius)/2) ? 0 : 1, 1);
 		}
 		const material = new THREE.MeshBasicMaterial( {
-			map: planet.ringImage,
+			map: await planet.ringImage,
 			transparent:true,
 			side: THREE.DoubleSide,
 		}); 
@@ -239,12 +241,12 @@
 	const mileToKilometer = 1.60934 
 	const root = 2;
 	export let radiusScalingFactor = (maxDistance/50)/(mileToKilometer*Math.pow(getPlanetByID('Sun').radius, 1/root)); 
-	function getPlanetMesh(planet){
+	async function getPlanetMesh(planet){
 		const radius = radiusScalingFactor * Math.pow(planet.radius, 1/root)
 		planet.scaledRadius = radius;
 		const geometry = new THREE.SphereGeometry(radius);
 		const material = new THREE.MeshBasicMaterial( {
-			map: planet.image
+			map: await planet.image
 		} );
 	
 		return new THREE.Mesh( geometry, material );
